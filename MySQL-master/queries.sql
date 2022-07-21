@@ -321,6 +321,122 @@ ORDER BY
     firstName;
 
 
+--Limits
+SELECT
+    fieldname
+FROM
+    TABLENAME
+LIMIT ;
+
+SELECT
+    customerNumber,
+    CustomerName,
+    creditLimit
+FROM
+    customers
+ORDER BY creditLimit ASC
+LIMIT 6;
+
+SELECT
+    customerNumber,
+    CustomerName,
+    creditLimit
+FROM
+    customers
+ORDER BY CustomerName ASC
+LIMIT 10,10;
+-- starting from 11 and giving 10 rows 
+-- first number is the staring from where we have to start and second is the number of data we want to show.
+
+-- distinct
+
+SELECT DISTINCT
+    `state`
+FROM
+    `customers`
+WHERE
+    `state` IS NOT NULL
+LIMIT 5;
+
+SELECT
+    CONCAT_WS(',',lastName,firstName) AS 'FULL NAME'
+FROM
+    employees;
+
+SELECT
+    orderLineNumber,orderNumber,
+    SUM(quantityOrdered*priceEach) AS total
+FROM    
+    orderdetails
+Group BY
+      orderNumber
+      having
+      total>60000;
+
+--SELECT column_name(s)
+--FROM table1
+--INNER JOIN table2
+--ON table1.column_name = table2.column_name;
+
+Select products.productName,orderdetails.priceEach
+from products
+inner join orderdetails ON products.productCode = orderdetails.productCode
+limit 5;
+
+--SELECT column_name(s)
+--FROM table1
+--left JOIN table2
+--ON table1.column_name = table2.column_name;
+Select products.productName,orderdetails.priceEach
+from products
+left join orderdetails ON products.productCode = orderdetails.productCode
+limit 5;
+
+--SELECT column_name(s)
+--FROM table1
+--right JOIN table2
+--ON table1.column_name = table2.column_name;
+
+Select products.productName,orderdetails.priceEach
+from products
+right join orderdetails ON products.productCode = orderdetails.productCode
+limit 5;
+
+--SELECT column_name(s)
+--FROM table1
+--cross JOIN table2
+--ON table1.column_name = table2.column_name;
+
+Select products.productName,orderdetails.priceEach
+from products
+cross join orderdetails ON products.productCode = orderdetails.productCode
+limit 5;
+
+--self join
+
+--to get the whole organization structure,
+--you can join employees table to itself using
+--the employeeNumber and reportsTo columns.
+--The table employees has two roles: one is the manager and the other is Direct Reports.
+
+SELECT 
+CONCAT(m.lastName,',',m.firstName) AS Manager,
+CONCAT(e.lastName,',',e.firstName) AS 'Direct report'
+FROM 
+employees e
+INNER JOIN employees m on
+m.employeeNumber=e.reportsTo
+ORDER BY
+Manager;
+
+
+
+
+
+
+
+
+
 
 
 
