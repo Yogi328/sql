@@ -436,16 +436,138 @@ create view cust AS
      from customers
      where customerName LIKE '%e';
 
+-- empdb
 
+create table merits(
+     performance INT(11) NOT NULL,
+     percentage float not null,
+     primary key(performance));
 
+create table employees(
+     emp_id int(11) not null auto_increment,
+     emp_name varchar(255) not null,
+     performance int(11) default null,
+     salary float default null,
+     primary key (emp_id),
+     constraint fk_performance foreign key(performance)
+     references merits(performance));
 
+ insert into merits(performance,percentage)
+    -> values(1,0),(2,0.01),(3,0.03),(4,0.04),(5,0.08);
 
+insert into employees(emp_name,performance,salary)
+    -> values('mary doe',1,50000),
+    -> ('cindy smith',2,4000),
+    -> ('yogita sharma',3,50000),
+    -> ('tinku',4,60000),
+    -> ('rohan',5,54000);
 
+update employees
+    -> inner join
+    -> merits on employees.performance=merits.performance
+    -> set
+    -> salary=salary+salary*percentage;
 
+--new hire
+ insert into employees(emp_name,performance,salary)
+    -> values('jyoti',null,43000),
+    -> ('rishu',null,52000);
 
+-- increase salary for new hire by 1.5%
 
+    update employees
+    -> left join
+    -> merits on employees.performance=merits.performance
+    -> set
+    -> salary=salary+salary*0.015
+    -> where
+    -> merits.percentage IS NULL;
 
+create table t1(id int primary key auto_increment);
+create table t2(id varchar(20) primary key,ref int not null);
+ insert into t1 values(1),(2),(3);
+ insert into t2(id,ref) values('A',1),('B',2),('C',3);
+ delete t1,t2 from t1
+    -> inner join
+    -> t2 on t2.ref=t1.id
+    -> where
+    -> t1.id=1;
+-- subqueries
 
+    select customerNumber,checkNumber,amount
+     from payments
+     where amount=(select max(amount) from payments);
 
+    select customerNumber,checkNumber,amount
+     from payments
+     where amount>(select AVG(amount) from payments);
 
+     --not in
 
+     select customerName
+    -> from customers
+    -> where customerNumber not in(select distinct customerNumber from orders);
+-- correlated subquery
+
+     select productname,buyprice
+    -> from products p1
+    -> where
+    -> buyprice>(select avg(buyprice)
+    -> from products
+    -> where productline=p1.productline);
+-- customers who placed at least one sales order with the total value
+--greater than 60k by using the EXISTS operator:
+select customerNumber,customerName
+    -> from customers
+    -> where exists(select orderNumber,sum(priceEach * quantityOrdered)
+    -> from orderdetails inner join orders using(orderNumber)
+    -> where customerNumber=customers.customerNumber
+    -> group by orderNumber
+    -> having sum(priceEach * quantityOrdered)>60000);
+
+--index
+
+     create index ci on employees(email);
+
+     explain select customerNumber,customerName
+     from customers
+     where exists(select orderNumber,sum(priceEach * quantityOrdered)
+     from orderdetails inner join orders using(orderNumber)
+     where customerNumber=customers.customerNumber
+     group by orderNumber
+     having sum(priceEach * quantityOrdered)>60000);
+-- drop index:
+      drop index ci on employees;
+
+create table leads(lead_id int auto_increment,first_name varchar(100) not null,last_name varchar(100) not null,email varchar(255) not null,information_source varchar(255),index name(first_name,last_name),unique email(email),primary key(lead_id));
+ delimiter $$
+ create procedure getCustomers()
+     begin
+     select customerName,
+     city,state,postalCode,country
+     from customers
+     order by customerName;
+     end$$
+    delimiter;
+   
+    delimiter $$
+    create procedure getofficebycountry(in countryName varchar(255))
+     begin select * from offices
+     where country = countryName;
+     end
+     delimiter;
+
+    delimiter $$
+    create procedure getsorderscountbystatus(
+        in orderStatus varchar(25),
+        out total int
+    )
+    begin select count(orderNumber)
+    into total
+    from orders
+    where status=orderStatus;
+    end$$
+    delimiter;
+
+ call getsorderscountbystatus('Shipped',@total);
+ select @total;
