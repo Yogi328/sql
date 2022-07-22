@@ -429,6 +429,13 @@ m.employeeNumber=e.reportsTo
 ORDER BY
 Manager;
 
+--view
+
+create view cust AS
+     select customerName,customerNumber
+     from customers
+     where customerName LIKE '%e';
+
 
 
 

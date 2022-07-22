@@ -22,3 +22,5 @@ insert into bug(id,project_id,name)VALUES(1,01,"java"),(2,02,"sql"),(3,03,"angul
  insert into bug_has_media(bug_id,bug_project_id,media_id)VALUES(11,01,1),(12,02,2),(13,03,3),(14,04,4),(15,05,5);
 
  create table media(id INT,user_id INT,path VARCHAR(70),filetypr VARCHAR(70),filesize DECIMAL(65,2),FOREIGN KEY(user_id) REFERENCES user(id));
+
+ 
